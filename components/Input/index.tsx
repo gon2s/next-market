@@ -1,10 +1,10 @@
 import React, { forwardRef, InputHTMLAttributes } from 'react';
 
-interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   errors?: string[];
 }
 
-const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
+const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ errors, ...props }, ref) => {
     return (
       <div className={'flex flex-col gap-2'}>
@@ -25,6 +25,6 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
   },
 );
 
-FormInput.displayName = 'FormInput';
+Input.displayName = 'Input';
 
-export default FormInput;
+export default Input;

@@ -2,12 +2,12 @@
 import React, { ButtonHTMLAttributes, ReactNode } from 'react';
 import { useFormStatus } from 'react-dom';
 
-interface FormButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean;
   children?: ReactNode;
 }
 
-function FormButton({ loading, children, ...rest }: FormButtonProps) {
+function Button({ loading, children, ...rest }: ButtonProps) {
   const { pending } = useFormStatus();
 
   return (
@@ -24,4 +24,4 @@ function FormButton({ loading, children, ...rest }: FormButtonProps) {
   );
 }
 
-export default FormButton;
+export default Button;

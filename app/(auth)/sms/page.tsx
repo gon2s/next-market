@@ -3,7 +3,7 @@
 import React from 'react';
 import { useFormState } from 'react-dom';
 import { handleVerifyCode } from './server-action';
-import { FormButton, FormInput } from '@/components';
+import { Button, Input } from '@/components';
 
 export const initialState = {
   authentication: false,
@@ -21,7 +21,7 @@ function SMSPage() {
       </div>
       <form className={'flex flex-col gap-3'} action={action}>
         {state.authentication ? (
-          <FormInput
+          <Input
             name={'verification-code'}
             type={'number'}
             placeholder={'인증 번호'}
@@ -30,7 +30,7 @@ function SMSPage() {
             errors={state?.error?.formErrors}
           />
         ) : (
-          <FormInput
+          <Input
             name={'phone-number'}
             type={'string'}
             placeholder={'휴대폰 번호'}
@@ -39,9 +39,7 @@ function SMSPage() {
           />
         )}
 
-        <FormButton>
-          {!state.authentication ? '인증번호 전송' : '인증하기'}{' '}
-        </FormButton>
+        <Button>{!state.authentication ? '인증번호 전송' : '인증하기'} </Button>
       </form>
     </div>
   );

@@ -3,7 +3,7 @@
 import React from 'react';
 import { useFormState } from 'react-dom';
 import { handleLogin } from './server-action';
-import { FormButton, FormInput, SocialButton } from '@/components';
+import { Button, Input, SocialButton } from '@/components';
 
 function LoginPage() {
   const [state, action] = useFormState(handleLogin, null);
@@ -18,14 +18,14 @@ function LoginPage() {
         <h2>로그인</h2>
       </div>
       <form className={'flex flex-col gap-3'} action={action}>
-        <FormInput
+        <Input
           name={'email'}
           type={'email'}
           placeholder={'Email'}
           required
           errors={state?.fieldErrors?.email || []}
         />
-        <FormInput
+        <Input
           name={'password'}
           type={'password'}
           placeholder={'Password'}
@@ -35,7 +35,7 @@ function LoginPage() {
           errors={state?.fieldErrors?.password || []}
         />
 
-        <FormButton>로그인</FormButton>
+        <Button>로그인</Button>
       </form>
       <SocialButton />
     </div>

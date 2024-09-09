@@ -1,3 +1,3 @@
-export { default as FormButton } from './form-button';
-export { default as FormInput } from './form-input';
+export { default as Button } from './Button';
+export { default as Input } from './Input';
 export { default as SocialButton } from './social-button';
