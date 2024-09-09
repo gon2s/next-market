@@ -1,7 +1,13 @@
+'use client';
+
 import React from 'react';
-import { FormButton, FormInput, SocialButton } from '@/components';
+import { useFormState } from 'react-dom';
+import { handleLogin } from './server-action';
+import { Button, Input, SocialButton } from '@/components';
 
 function LoginPage() {
+  const [state, action] = useFormState(handleLogin, null);
+
   return (
     <div className={'flex flex-col gap-10 py-8 px-6'}>
       <div className={'flex flex-col gap-2 *:font-medium'}>
@@ -11,16 +17,25 @@ function LoginPage() {
         </div>
         <h2>로그인</h2>
       </div>
-      <form className={'flex flex-col gap-3'} action="">
-        <FormInput type={'email'} placeholder={'Email'} required errors={[]} />
-        <FormInput
+      <form className={'flex flex-col gap-3'} action={action}>
+        <Input
+          name={'email'}
+          type={'email'}
+          placeholder={'Email'}
+          required
+          errors={state?.fieldErrors?.email || []}
+        />
+        <Input
+          name={'password'}
           type={'password'}
           placeholder={'Password'}
           required
-          errors={[]}
+          minLength={10}
+          maxLength={20}
+          errors={state?.fieldErrors?.password || []}
         />
 
-        <FormButton>Create Account</FormButton>
+        <Button>로그인</Button>
       </form>
       <SocialButton />
     </div>
