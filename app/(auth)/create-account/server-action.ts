@@ -1,11 +1,10 @@
 'use server';
 
 import bcrypt from 'bcrypt';
-import { getIronSession } from 'iron-session';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import db from '@/lib/db';
+import getSession from '@/lib/getSession';
 
 const passwordReg =
   /^(?=.*[A-Za-z])(?=.*\d|.*[!@#$%^&*()_+{}[\]:;"'<>?,./])|(?=.*\d)(?=.*[A-Za-z]|.*[!@#$%^&*()_+{}[\]:;"'<>?,./])|(?=.*[!@#$%^&*()_+{}[\]:;"'<>?,./])(?=.*[A-Za-z]|.*\d).+$/;
@@ -76,6 +75,7 @@ export const handleCreateAccount = async (
   if (!res.success) {
     return res.error.flatten();
   }
+
   const hashedPassword = await bcrypt.hash(res.data.password, 12);
 
   const user = await db.user.create({
@@ -89,13 +89,9 @@ export const handleCreateAccount = async (
     },
   });
 
-  const cookie = await getIronSession(cookies(), {
-    cookieName: 'gon-market',
-    password: process.env.COOKIE_PASSWORD!,
-  });
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
+  const cookie = await getSession();
   cookie.id = user.id;
   await cookie.save();
+
   redirect('/profile');
 };
