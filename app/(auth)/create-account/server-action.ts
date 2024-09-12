@@ -89,9 +89,9 @@ export const handleCreateAccount = async (
     },
   });
 
-  const cookie = await getSession();
-  cookie.id = user.id;
-  await cookie.save();
+  const session = await getSession();
+  session.id = user.id;
+  await session.save();
 
   redirect('/profile');
 };

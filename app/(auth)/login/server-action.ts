@@ -46,6 +46,7 @@ export const handleLogin = async (_: unknown, formData: FormData) => {
     if (isSuccess) {
       const session = await getSession();
       session.id = user.id;
+      await session.save();
       redirect('/profile');
     }
   }
