@@ -1,30 +1,65 @@
 'use server';
 
+import crypto from 'crypto';
 import { redirect } from 'next/navigation';
-import validator from 'validator';
 import { z } from 'zod';
+import db from '@/lib/db';
+import getSession from '@/lib/getSession';
 
 export interface InitialState {
   authentication: boolean;
 }
 
+const phoneRegex = /^(\+?\d{1,3}[- ]?)?\d{10}$/;
+
 const phoneSchema = z
   .string()
   .trim()
-  .refine(val => validator.isMobilePhone(val, 'ko-KR'), {
+  .refine(val => phoneRegex.test(val), {
     message: '올바른 휴대폰 번호 형식이 아니에요.',
   });
 
+const codeExist = async (value: number) => {
+  const exist = await db.verificationCode.findUnique({
+    where: {
+      code: value.toString(),
+    },
+    select: {
+      id: true,
+    },
+  });
+  return !!exist;
+};
+
 const verificationCodeSchema = z.coerce
   .number()
-  .refine(val => val > 99999 && val < 1000000, {
-    message: '인증번호 6자를 입력해주세요.',
-  });
+  .superRefine((val, ctx) => {
+    if (+val < 100000 || +val > 1000000) {
+      ctx.addIssue({
+        code: 'custom',
+        message: '인증번호 6자를 입력해주세요.',
+        fatal: true,
+      });
+    }
+  })
+  .refine(val => codeExist(val), { message: '인증번호가 일치하지 않아요.' });
 
-export const handleVerifyCode = (
+const createCode = async () => {
+  const code = crypto.randomInt(100000, 999999).toString();
+  const exist = await db.verificationCode.findUnique({
+    where: { code },
+    select: { id: true },
+  });
+  if (exist) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return createCode();
+  }
+  return code;
+};
+
+export const handleVerifyCode = async (
   prevState: InitialState,
   formData: FormData,
-  // eslint-disable-next-line consistent-return
 ) => {
   const data = {
     phoneNumber: formData.get('phone-number'),
@@ -36,14 +71,58 @@ export const handleVerifyCode = (
     if (!phoneRes.success) {
       return { authentication: false, error: phoneRes.error.flatten() };
     }
+    await db.verificationCode.deleteMany({
+      where: {
+        user: {
+          phone: phoneRes.data,
+        },
+      },
+    });
+    const code = (await createCode()) as string;
+    await db.verificationCode.create({
+      data: {
+        code,
+        user: {
+          connectOrCreate: {
+            where: { phone: phoneRes.data },
+            create: {
+              username: crypto.randomBytes(10).toString('hex'),
+              phone: phoneRes.data,
+            },
+          },
+        },
+      },
+    });
     return { authentication: true };
   }
 
-  const verificationCodeRes = verificationCodeSchema.safeParse(
+  const verificationCodeRes = await verificationCodeSchema.safeParseAsync(
     data.verificationCode,
   );
+
   if (!verificationCodeRes.success) {
-    return { authentication: true, error: verificationCodeRes.error.flatten() };
+    return {
+      authentication: true,
+      error: verificationCodeRes?.error.flatten(),
+    };
   }
-  redirect('/');
+
+  const verificationValue = await db.verificationCode.findUnique({
+    where: {
+      code: verificationCodeRes.data.toString(),
+    },
+    select: { id: true, userId: true },
+  });
+  if (verificationValue) {
+    const session = await getSession();
+    session.id = verificationValue?.userId;
+    await session.save();
+    await db.verificationCode.delete({
+      where: {
+        id: verificationValue.id,
+      },
+    });
+  }
+
+  return redirect('/');
 };

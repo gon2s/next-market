@@ -3,7 +3,7 @@
 import React from 'react';
 import { useFormState } from 'react-dom';
 import { handleLogin } from './server-action';
-import { Button, Input, SocialButton } from '@/components';
+import { Button, Input } from '@/components';
 
 function LoginPage() {
   const [state, action] = useFormState(handleLogin, null);
@@ -37,7 +37,7 @@ function LoginPage() {
 
         <Button>로그인</Button>
       </form>
-      <SocialButton />
+      {/* <SocialButton /> */}
     </div>
   );
 }

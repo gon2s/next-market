@@ -31,6 +31,6 @@ model VerificationCode {
   code       String   @unique
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  user       User     @relation(fields: [userid], references: [id], onDelete: Cascade)
-  userid     Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
 }

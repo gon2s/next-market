@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import { redirect } from 'next/navigation';
+import React, { useEffect, useRef } from 'react';
 import { useFormState } from 'react-dom';
 import { handleVerifyCode } from './server-action';
 import { Button, Input } from '@/components';
@@ -11,7 +12,19 @@ export const initialState = {
 };
 
 function SMSPage() {
+  const numberRef = useRef<HTMLInputElement>(null);
+
   const [state, action] = useFormState(handleVerifyCode, initialState);
+
+  useEffect(() => {
+    if (state.authentication) {
+      if (numberRef.current) numberRef.current.value = '';
+    }
+  }, [state.authentication]);
+
+  useEffect(() => {
+    redirect('/login');
+  }, []);
 
   return (
     <div className={'flex flex-col gap-10 py-8 px-6'}>
@@ -22,12 +35,21 @@ function SMSPage() {
       <form className={'flex flex-col gap-3'} action={action}>
         {state.authentication ? (
           <Input
+            ref={numberRef}
             name={'verification-code'}
             type={'number'}
             placeholder={'인증 번호'}
             required
             maxLength={6}
             errors={state?.error?.formErrors}
+            onInput={e => {
+              if (e.currentTarget.value.length > e.currentTarget.maxLength) {
+                e.currentTarget.value = e.currentTarget.value.slice(
+                  0,
+                  e.currentTarget.maxLength,
+                );
+              }
+            }}
           />
         ) : (
           <Input
