@@ -1,3 +1,5 @@
+'use client';
+
 /* eslint-disable react/button-has-type */
 import React, { ButtonHTMLAttributes, ReactNode } from 'react';
 import { useFormStatus } from 'react-dom';
