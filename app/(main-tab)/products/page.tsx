@@ -1,5 +1,5 @@
 import React from 'react';
-import { MainProductItem } from '@/components/@Products';
+import { ProductListComponent } from './components';
 import db from '@/lib/db';
 
 const getProduct = async () => {
@@ -11,19 +11,14 @@ const getProduct = async () => {
       created_at: true,
       photo: true,
     },
+    take: 1,
   });
   return product;
 };
 
 async function ProductsPage() {
   const products = await getProduct();
-  return (
-    <div className="p-5 flex flex-col gap-5">
-      {products.map(li => {
-        return <MainProductItem key={li.id} {...li} />;
-      })}
-    </div>
-  );
+  return <ProductListComponent dataList={products} />;
 }
 
 export default ProductsPage;

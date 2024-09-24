@@ -51,7 +51,12 @@ async function ProductDetailPage({ params }: ProductDetailPageProps) {
   return (
     <div>
       <div className="relative aspect-square max-w-[480px] mx-auto">
-        <Image fill src={productDetail.photo} alt={productDetail.title} />
+        <Image
+          fill
+          src={productDetail.photo}
+          alt={productDetail.title}
+          className={'object-cover'}
+        />
       </div>
       <div className="max-w-[480px] mx-auto">
         <div className="p-5 flex items-center gap-3 border-b border-neutral-700">
