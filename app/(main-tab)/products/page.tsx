@@ -1,6 +1,8 @@
 import React from 'react';
+import { PlusIcon } from '@heroicons/react/24/solid';
 import { ProductListComponent } from './components';
 import db from '@/lib/db';
+import Link from 'next/link';
 
 const getProduct = async () => {
   const product = await db.product.findMany({
@@ -18,7 +20,19 @@ const getProduct = async () => {
 
 async function ProductsPage() {
   const products = await getProduct();
-  return <ProductListComponent dataList={products} />;
+  return (
+    <div>
+      <ProductListComponent dataList={products} />
+      <Link
+        href={'products/add'}
+        className={
+          'bg-orange-500 flex items-center justify-center rounded-full size-16 fixed bottom-24 right-8 text-white transition-colors hover:bg-orange-400'
+        }
+      >
+        <PlusIcon className="size-10" />
+      </Link>
+    </div>
+  );
 }
 
 export default ProductsPage;

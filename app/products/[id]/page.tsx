@@ -53,7 +53,7 @@ async function ProductDetailPage({ params }: ProductDetailPageProps) {
       <div className="relative aspect-square max-w-[480px] mx-auto">
         <Image
           fill
-          src={productDetail.photo}
+          src={`${productDetail.photo}/public`}
           alt={productDetail.title}
           className={'object-cover'}
         />
