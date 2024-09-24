@@ -56,7 +56,7 @@ function ProductListComponent({ dataList }: ProductListComponentProps) {
         <span
           ref={trigger}
           style={{
-            marginTop: `${page + 1 * 900}vh`,
+            marginTop: `${page + 1 * 100}vh`,
           }}
           className="mb-[100px] text-sm font-semibold bg-orange-500 w-fit mx-auto px-3 py-2 rounded-md hover:opacity-90 active:scale-95"
         >
