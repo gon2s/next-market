@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { UserIcon } from '@heroicons/react/24/solid';
 import { unstable_cache as nextCache } from 'next/cache';
 import Image from 'next/image';
@@ -113,28 +114,54 @@ async function ProductDetailPage({ params }: ProductDetailPageProps) {
           </div>
         </div>
         <div className="p-5 mb-[100px]">
-          <h1 className="text-2xl font-semibold">{productDetail.title}</h1>
-          <p>{productDetail.description}</p>
+          <h1 className="text-2xl sm:text-3xl font-semibold">
+            {productDetail.title}
+          </h1>
+          <p className={'mt-2'}>{productDetail.description}</p>
         </div>
       </div>
-      <div className="fixed left-0 bottom-0 w-full h-[100px] p-5 bg-neutral-800 flex justify-between items-center">
-        <span className="font-semibold text-xl">
-          {`${productDetail.price.toLocaleString()}원`}
-        </span>
-        {isOwner ? (
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
-          <form action={handleRevalidate}>
-            <button
-              className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold"
-              type={'submit'}
-            >
-              Delete product
-            </button>
-          </form>
-        ) : null}
+
+      <div className="fixed left-0 bottom-0 w-full h-[100px] py-2 sm:px-5 px-3.5 bg-neutral-800 flex flex-row items-center gap-4 border-t-[0.5px] border-t-neutral-500">
+        <div className="flex flex-1 flex-col gap-1 justify-center">
+          <span className="font-semibold sm:text-xl text-base">
+            {`${productDetail.price.toLocaleString()}원`}
+          </span>
+          <div className={'flex flex-row justify-between'}>
+            {isOwner ? (
+              <div
+                className={
+                  'flex flex-row items-center sm:gap-2 gap-1 *:sm:text-base text-sm'
+                }
+              >
+                <form action={handleRevalidate}>
+                  <button
+                    className={
+                      'bg-red-500 px-5 py-2 rounded-md text-white font-semibold'
+                    }
+                    type={'submit'}
+                  >
+                    편집
+                  </button>
+                </form>
+                <form action={handleRevalidate}>
+                  <button
+                    className={
+                      'bg-red-500 px-5 py-2 rounded-md text-white font-semibold'
+                    }
+                    type={'submit'}
+                  >
+                    삭제
+                  </button>
+                </form>
+              </div>
+            ) : (
+              <div />
+            )}
+          </div>
+        </div>
         <Link
           className={
-            'bg-orange-500 px-5 py-2.5 rounded-md text-white font-semibold'
+            ' bg-orange-500 px-6 py-4 rounded-md text-white font-semibold sm:text-base text-sm'
           }
           href={`/chat`}
         >
