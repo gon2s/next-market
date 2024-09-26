@@ -39,7 +39,7 @@ function ProductAddPage() {
       form.append('file', photoFile);
 
       const res = await fetch(uploadUrl, {
-        method: 'post',
+        method: 'POST',
         body: form,
       });
 
@@ -80,11 +80,11 @@ function ProductAddPage() {
         <input
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onChange={handleImageChange}
+          accept={'image/jpg,image/png,image/jpeg,image/gif'}
           type={'file'}
           id={'photo'}
           name={'photo'}
           className={'hidden'}
-          accept={'image/*'}
         />
         <Input
           required
