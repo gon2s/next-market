@@ -1,9 +1,10 @@
 import { UserIcon } from '@heroicons/react/24/solid';
-import { unstable_cache as nextCache, revalidateTag } from 'next/cache';
+import { unstable_cache as nextCache } from 'next/cache';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import React from 'react';
+import { deleteProductAction } from './server-action';
 import db from '@/lib/db';
 import getSession from '@/lib/getSession';
 
@@ -75,11 +76,10 @@ async function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   const isOwner = await getIsOwner(productDetail.userId);
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   const handleRevalidate = async () => {
     'use server';
 
-    revalidateTag('product-title');
+    await deleteProductAction({ id: Number(params.id) });
   };
 
   return (
