@@ -4,6 +4,8 @@ import React from 'react';
 import { ProductListComponent } from './components';
 import db from '@/lib/db';
 
+export const productPageSize = 8;
+
 export const generateMetadata = () => {
   return {
     title: '홈',
@@ -19,7 +21,7 @@ const getProduct = async () => {
       created_at: true,
       photo: true,
     },
-    take: 1,
+    take: productPageSize,
   });
   return product;
 };

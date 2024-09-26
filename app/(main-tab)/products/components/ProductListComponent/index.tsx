@@ -49,19 +49,16 @@ function ProductListComponent({ dataList }: ProductListComponentProps) {
   }, [page]);
 
   return (
-    <div className="p-5 flex flex-col gap-5">
+    <div className="p-5 flex flex-col gap-5 mb-[100px]">
       {data.map(li => {
         return <MainProductItem key={li.id} {...li} />;
       })}
       {!isLast && (
         <span
           ref={trigger}
-          style={{
-            marginTop: `${page + 1 * 100}vh`,
-          }}
-          className="mb-[100px] text-sm font-semibold bg-orange-500 w-fit mx-auto px-3 py-2 rounded-md hover:opacity-90 active:scale-95"
+          className="mb-4 text-sm font-semibold  w-fit mx-auto px-3 py-5 rounded-md hover:opacity-90 active:scale-95 text-orange-400"
         >
-          {isLoading ? '로딩 중' : 'Load more'}
+          {isLoading ? '로딩 중' : ''}
         </span>
       )}
     </div>

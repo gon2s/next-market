@@ -1,9 +1,8 @@
 'use server';
 
+import { productPageSize } from './page';
 import { IProduct } from '@/@types';
 import db from '@/lib/db';
-
-const pageSize = 1;
 
 export const fetchNextPage = async (page: number) => {
   const product = (await db.product.findMany({
@@ -14,8 +13,8 @@ export const fetchNextPage = async (page: number) => {
       created_at: true,
       photo: true,
     },
-    skip: pageSize * page,
-    take: pageSize,
+    skip: productPageSize * page,
+    take: productPageSize,
   })) as IProduct[];
   return product;
 };
