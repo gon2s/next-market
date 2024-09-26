@@ -1,9 +1,9 @@
-import React from 'react';
-import { notFound } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
 import { UserIcon } from '@heroicons/react/24/solid';
 import { unstable_cache as nextCache, revalidateTag } from 'next/cache';
+import Image from 'next/image';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import React from 'react';
 import db from '@/lib/db';
 import getSession from '@/lib/getSession';
 
@@ -63,6 +63,7 @@ interface ProductDetailPageProps {
 
 async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const productId = Number(params.id);
+  // eslint-disable-next-line no-restricted-globals
   if (isNaN(productId)) {
     return notFound();
   }
@@ -74,8 +75,10 @@ async function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   const isOwner = await getIsOwner(productDetail.userId);
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   const handleRevalidate = async () => {
     'use server';
+
     revalidateTag('product-title');
   };
 
@@ -119,8 +122,12 @@ async function ProductDetailPage({ params }: ProductDetailPageProps) {
           {`${productDetail.price.toLocaleString()}원`}
         </span>
         {isOwner ? (
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           <form action={handleRevalidate}>
-            <button className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold">
+            <button
+              className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold"
+              type={'submit'}
+            >
               Delete product
             </button>
           </form>

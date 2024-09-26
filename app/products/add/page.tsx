@@ -1,10 +1,10 @@
 'use client';
 
 import { PhotoIcon } from '@heroicons/react/24/solid';
-import { Button, Input } from '@/components';
 import React, { ChangeEvent, useCallback, useState } from 'react';
-import { uploadProductAction, uploadUrlAction } from './server-action';
 import { useFormState } from 'react-dom';
+import { uploadProductAction, uploadUrlAction } from './server-action';
+import { Button, Input } from '@/components';
 
 function ProductAddPage() {
   const [preview, setPreview] = useState('');
@@ -23,7 +23,6 @@ function ProductAddPage() {
 
       const { success, result } = await uploadUrlAction();
       if (success) {
-        console.log(result.uploadURL);
         setUploadUrl(result.uploadURL);
         setUploadImageId(result.id);
       }
@@ -32,7 +31,7 @@ function ProductAddPage() {
   );
 
   const interceptAction = useCallback(
-    async (_: any, formData: FormData) => {
+    async (_: unknown, formData: FormData) => {
       const photoFile = formData.get('photo');
       if (!photoFile) return;
 
@@ -50,7 +49,8 @@ function ProductAddPage() {
 
       const photoUrl = `https://imagedelivery.net/6IREz8AMoHUB6_OB5KvL4w/${uploadImageId}`;
       formData.set('photo', photoUrl);
-      return await uploadProductAction(_, formData);
+      // eslint-disable-next-line consistent-return
+      return uploadProductAction(_, formData);
     },
     [uploadUrl, uploadImageId],
   );
@@ -78,6 +78,7 @@ function ProductAddPage() {
           )}
         </label>
         <input
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onChange={handleImageChange}
           type={'file'}
           id={'photo'}

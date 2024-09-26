@@ -1,10 +1,9 @@
 'use server';
 
-import db from '@/lib/db';
-import getSession from '@/lib/getSession';
-import fs from 'fs/promises';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
+import db from '@/lib/db';
+import getSession from '@/lib/getSession';
 
 export interface IUploadedImage {
   result: {
@@ -36,7 +35,7 @@ export const uploadUrlAction = async (): Promise<IUploadedImage> => {
       headers: { Authorization: `Bearer ${process.env.CLOUDFLARE_API_KEY}` },
     },
   );
-  const data = await res.json();
+  const data = (await res.json()) as IUploadedImage;
   return data;
 };
 
@@ -73,4 +72,5 @@ export const uploadProductAction = async (_: unknown, formData: FormData) => {
     });
     redirect(`/products/${product.id}`);
   }
+  return null;
 };

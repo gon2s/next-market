@@ -44,16 +44,8 @@ const verificationCodeSchema = z.coerce
   })
   .refine(val => codeExist(val), { message: '인증번호가 일치하지 않아요.' });
 
-const createCode = async () => {
+const createCode = () => {
   const code = crypto.randomInt(100000, 999999).toString();
-  const exist = await db.verificationCode.findUnique({
-    where: { code },
-    select: { id: true },
-  });
-  if (exist) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return createCode();
-  }
   return code;
 };
 
@@ -78,7 +70,7 @@ export const handleVerifyCode = async (
         },
       },
     });
-    const code = (await createCode()) as string;
+    const code = createCode();
     await db.verificationCode.create({
       data: {
         code,

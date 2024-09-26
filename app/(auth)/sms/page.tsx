@@ -6,7 +6,7 @@ import { useFormState } from 'react-dom';
 import { handleVerifyCode } from './server-action';
 import { Button, Input } from '@/components';
 
-export const initialState = {
+const formStats = {
   authentication: false,
   error: undefined,
 };
@@ -14,7 +14,7 @@ export const initialState = {
 function SMSPage() {
   const numberRef = useRef<HTMLInputElement>(null);
 
-  const [state, action] = useFormState(handleVerifyCode, initialState);
+  const [state, action] = useFormState(handleVerifyCode, formStats);
 
   useEffect(() => {
     if (state.authentication) {

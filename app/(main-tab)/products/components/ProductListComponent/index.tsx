@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { fetchNextPage } from '../../server-action';
 import { IProduct } from '@/@types';
 import { MainProductItem } from '@/components/@Products';
@@ -19,13 +19,14 @@ function ProductListComponent({ dataList }: ProductListComponentProps) {
 
   useEffect(() => {
     const observer = new IntersectionObserver(
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       async (
         entries: IntersectionObserverEntry[],
-        observer: IntersectionObserver,
+        ob: IntersectionObserver,
       ) => {
         const el = entries[0];
         if (el.isIntersecting && trigger.current) {
-          observer.unobserve(trigger.current);
+          ob.unobserve(trigger.current);
           setIsLoading(true);
           const newProduct = await fetchNextPage(page);
           if (newProduct.length !== 0) {
