@@ -1,10 +1,9 @@
-/* eslint-disable react/button-has-type */
-/* eslint-disable no-restricted-globals */
-import { UserIcon } from '@heroicons/react/24/solid';
+import React from 'react';
+import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import React from 'react';
+import { UserIcon } from '@heroicons/react/24/solid';
+import { unstable_cache as nextCache, revalidateTag } from 'next/cache';
 import db from '@/lib/db';
 import getSession from '@/lib/getSession';
 
@@ -31,6 +30,33 @@ const getProductDetail = async (id: number) => {
   return productInfo;
 };
 
+const getProductTitle = async (id: number) => {
+  const product = await db.product.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      title: true,
+    },
+  });
+  return product;
+};
+
+const getCachedProductTitle = nextCache(getProductTitle, ['product-title'], {
+  tags: ['product-title'],
+});
+
+export const generateMetadata = async ({
+  params,
+}: {
+  params: { id: string };
+}) => {
+  const res = await getCachedProductTitle(Number(params.id));
+  return {
+    title: res?.title,
+  };
+};
+
 interface ProductDetailPageProps {
   params: { id: string };
 }
@@ -48,10 +74,16 @@ async function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   const isOwner = await getIsOwner(productDetail.userId);
 
+  const handleRevalidate = async () => {
+    'use server';
+    revalidateTag('product-title');
+  };
+
   return (
     <div>
       <div className="relative aspect-square max-w-[480px] mx-auto">
         <Image
+          priority
           fill
           src={`${productDetail.photo}/public`}
           alt={productDetail.title}
@@ -63,6 +95,7 @@ async function ProductDetailPage({ params }: ProductDetailPageProps) {
           <div className="size-10 overflow-hidden rounded-full">
             {productDetail.user?.profile_img !== null ? (
               <Image
+                priority
                 src={productDetail.user.profile_img}
                 width={40}
                 height={40}
@@ -86,9 +119,11 @@ async function ProductDetailPage({ params }: ProductDetailPageProps) {
           {`${productDetail.price.toLocaleString()}원`}
         </span>
         {isOwner ? (
-          <button className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold">
-            Delete product
-          </button>
+          <form action={handleRevalidate}>
+            <button className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold">
+              Delete product
+            </button>
+          </form>
         ) : null}
         <Link
           className={

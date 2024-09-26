@@ -4,6 +4,12 @@ import { ProductListComponent } from './components';
 import db from '@/lib/db';
 import Link from 'next/link';
 
+export const generateMetadata = () => {
+  return {
+    title: '홈',
+  };
+};
+
 const getProduct = async () => {
   const product = await db.product.findMany({
     select: {
