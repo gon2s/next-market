@@ -9,6 +9,7 @@ function MainProductItem({ id, title, photo, price, created_at }: IProduct) {
     <Link href={`/products/${id}`} className={'flex gap-5'}>
       <div className={'relative size-28 rounded-md overflow-hidden'}>
         <Image
+          priority
           fill
           src={`${photo}/avatar`}
           alt={title}
