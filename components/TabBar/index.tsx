@@ -31,8 +31,8 @@ function TabBar() {
         )}
         <span>홈</span>
       </Link>
-      <Link href="/life" className="flex flex-col items-center gap-px">
-        {pathname === '/life' ? (
+      <Link href="/posts" className="flex flex-col items-center gap-px">
+        {pathname === '/posts' ? (
           <SolidNewspaperIcon className="w-7 h-7" />
         ) : (
           <OutlineNewspaperIcon className="w-7 h-7" />
