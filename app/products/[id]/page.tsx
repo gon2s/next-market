@@ -60,7 +60,9 @@ export const generateMetadata = async ({
 };
 
 interface ProductDetailPageProps {
-  params: { id: string };
+  params: {
+    id: string;
+  };
 }
 
 async function ProductDetailPage({ params }: ProductDetailPageProps) {
@@ -85,7 +87,7 @@ async function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   return (
     <div>
-      <div className="relative aspect-square max-w-[480px] mx-auto">
+      <div className="relative aspect-square max-w-[480px] mx-auto rounded-2xl overflow-hidden">
         <Image
           priority
           fill
@@ -133,16 +135,14 @@ async function ProductDetailPage({ params }: ProductDetailPageProps) {
                   'flex flex-row items-center sm:gap-2 gap-1 *:sm:text-base text-sm'
                 }
               >
-                <form action={handleRevalidate}>
-                  <button
-                    className={
-                      'bg-red-500 px-5 py-2 rounded-md text-white font-semibold'
-                    }
-                    type={'submit'}
-                  >
-                    편집
-                  </button>
-                </form>
+                <Link
+                  href={`/products/edit/${params.id}`}
+                  className={
+                    'bg-red-500 px-5 py-2 rounded-md text-white font-semibold'
+                  }
+                >
+                  편집
+                </Link>
                 <form action={handleRevalidate}>
                   <button
                     className={

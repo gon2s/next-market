@@ -3,7 +3,8 @@
 import { PhotoIcon } from '@heroicons/react/24/solid';
 import React, { ChangeEvent, useCallback, useState } from 'react';
 import { useFormState } from 'react-dom';
-import { uploadProductAction, uploadUrlAction } from './server-action';
+import { uploadUrlAction } from '../server-action';
+import { createProductAction } from './server-action';
 import { Button, Input } from '@/components';
 
 function ProductAddPage() {
@@ -50,7 +51,7 @@ function ProductAddPage() {
       const photoUrl = `https://imagedelivery.net/6IREz8AMoHUB6_OB5KvL4w/${uploadImageId}`;
       formData.set('photo', photoUrl);
       // eslint-disable-next-line consistent-return
-      return uploadProductAction(_, formData);
+      return createProductAction(_, formData);
     },
     [uploadUrl, uploadImageId],
   );
@@ -78,6 +79,7 @@ function ProductAddPage() {
           )}
         </label>
         <input
+          readOnly
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onChange={handleImageChange}
           accept={'image/jpg,image/png,image/jpeg,image/gif'}
@@ -99,6 +101,15 @@ function ProductAddPage() {
           required
           placeholder={'가격'}
           errors={state?.fieldErrors.price}
+          maxLength={10}
+          onInput={e => {
+            if (e.currentTarget.value.length > e.currentTarget.maxLength) {
+              e.currentTarget.value = e.currentTarget.value.slice(
+                0,
+                e.currentTarget.maxLength,
+              );
+            }
+          }}
         />
         <Input
           required

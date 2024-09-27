@@ -1,26 +1,9 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { z } from 'zod';
+import { IUploadedImage, productSchema } from './utils';
 import db from '@/lib/db';
 import getSession from '@/lib/getSession';
-
-export interface IUploadedImage {
-  result: {
-    id: string;
-    uploadURL: string;
-  };
-  success: boolean;
-}
-
-const productSchema = z.object({
-  photo: z.string({
-    required_error: '사진은 필수에요',
-  }),
-  title: z.string({ required_error: '제목은 필수에요' }),
-  price: z.coerce.number({ required_error: '가격은 필수에요' }),
-  description: z.string(),
-});
 
 /**
  * 요청 시 Cloudflare로부터 일회성 이미지 업로드 URL을 생성하는 함수.
