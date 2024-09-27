@@ -109,7 +109,7 @@ async function PostDetailPage({ params }: PostDetailPageProps) {
 
     try {
       await disLikePostAction({ postId: id });
-      revalidateTag('LIKE_INFO');
+      revalidateTag(`LIKE_INFO-${id}`);
     } catch (error) {
       console.log(error);
     }
