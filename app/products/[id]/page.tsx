@@ -138,10 +138,10 @@ async function ProductDetailPage({ params }: ProductDetailPageProps) {
                 <Link
                   href={`/products/edit/${params.id}`}
                   className={
-                    'bg-red-500 px-5 py-2 rounded-md text-white font-semibold'
+                    'bg-gray-500 px-5 py-2 rounded-md text-white font-semibold'
                   }
                 >
-                  편집
+                  수정
                 </Link>
                 <form action={handleRevalidate}>
                   <button
