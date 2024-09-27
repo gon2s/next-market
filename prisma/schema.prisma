@@ -14,17 +14,21 @@ datasource db {
 }
 
 model User {
-  id               Int                @id @default(autoincrement())
-  username         String             @unique
-  email            String?            @unique
-  password         String?
-  phone            String?            @unique
-  github_id        String?            @unique
-  profile_img      String?
-  created_at       DateTime           @default(now())
-  updated_at       DateTime           @updatedAt
-  VerificationCode VerificationCode[]
-  Product          Product[]
+  id          Int      @id @default(autoincrement())
+  username    String   @unique
+  email       String?  @unique
+  password    String?
+  phone       String?  @unique
+  github_id   String?  @unique
+  profile_img String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  verificationCode VerificationCode[]
+  product          Product[]
+  post             Post[]
+  comment          Comment[]
+  like             Like[]
 }
 
 model VerificationCode {
@@ -44,6 +48,47 @@ model Product {
   price       Float
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id])
+  // user를 삭제하면 user가 등록한 Product도 제거됨
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
+}
+
+model Post {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+  views       Int     @default(0)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  // user를 삭제하면 user가 등록한 Post도 제거됨
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+
+  comments Comment[]
+  likes    Like[]
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  payload    String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+  // post를 삭제하면 post에 존재하는 Comment도 제거됨
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId     Int
+}
+
+model Like {
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int      @unique
+  // post를 삭제하면 post에 존재하는 Like도 제거됨
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId     Int      @unique
+
+  @@id(name: "id", [userId, postId])
 }
