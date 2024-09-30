@@ -6,7 +6,8 @@ import { unstable_cache as nextCache } from 'next/cache';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import React from 'react';
-import { PostLikeToggleButton } from '@/components';
+import { IComment } from '@/@types';
+import { PostComment, PostLikeToggleButton } from '@/components';
 import db from '@/lib/db';
 import getSession from '@/lib/getSession';
 
@@ -44,6 +45,33 @@ const getPostDetail = async (id: number) => {
 };
 
 const getCachedPostDetail = nextCache(getPostDetail, ['POST_DETAIL']);
+
+const getCommentList = async (params: { postId: number }) => {
+  const res = await db.comment.findMany({
+    where: {
+      postId: params.postId,
+    },
+    select: {
+      id: true,
+      created_at: true,
+      payload: true,
+      user: {
+        select: {
+          profile_img: true,
+          username: true,
+        },
+      },
+    },
+  });
+  return res;
+};
+
+const getCachedCommentList = async (postId: number) => {
+  const cache = nextCache(getCommentList, [`POST_${postId}_COMMENT`], {
+    tags: [`POST_${postId}_COMMENT`],
+  });
+  return cache({ postId });
+};
 
 const getLikeInfo = async (params: { postId: number; userId: number }) => {
   const isLiked = await db.like.findUnique({
@@ -91,6 +119,8 @@ async function PostDetailPage({ params }: PostDetailPageProps) {
 
   if (!data) return notFound();
 
+  const commentList = (await getCachedCommentList(id)) as unknown as IComment[];
+
   const likeInfo = await getCachedLikeInfo(id);
 
   return (
@@ -121,9 +151,11 @@ async function PostDetailPage({ params }: PostDetailPageProps) {
           <EyeIcon className="size-5" />
           <span>조회 {data.views}</span>
         </div>
-        {/* <form action={likeInfo.isLiked ? handleDislikePost : handleLikePost}> */}
         <PostLikeToggleButton {...likeInfo} postId={id} />
-        {/* </form> */}
+      </div>
+
+      <div className={'mt-4'}>
+        <PostComment commentList={commentList} postId={id} />
       </div>
     </div>
   );
