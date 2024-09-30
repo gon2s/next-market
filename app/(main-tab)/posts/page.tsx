@@ -9,7 +9,7 @@ import Link from 'next/link';
 import React from 'react';
 import db from '@/lib/db';
 
-export const getPosts = async () => {
+const getPosts = async () => {
   const posts = await db.post.findMany({
     select: {
       id: true,
