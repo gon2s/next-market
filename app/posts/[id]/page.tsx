@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-restricted-globals */
-import { HandThumbUpIcon as OutlineHandThumbUpIcon } from '@heroicons/react/24/outline';
-import { UserIcon, EyeIcon, HandThumbUpIcon } from '@heroicons/react/24/solid';
+import { UserIcon, EyeIcon } from '@heroicons/react/24/solid';
 import dayjs from 'dayjs';
-import { unstable_cache as nextCache, revalidateTag } from 'next/cache';
+import { unstable_cache as nextCache } from 'next/cache';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import React from 'react';
-import { disLikePostAction, likePostAction } from './server-action';
+import { PostLikeToggleButton } from '@/components';
 import db from '@/lib/db';
 import getSession from '@/lib/getSession';
 
@@ -93,28 +91,6 @@ async function PostDetailPage({ params }: PostDetailPageProps) {
 
   if (!data) return notFound();
 
-  const handleLikePost = async () => {
-    'use server';
-
-    try {
-      await likePostAction({ postId: id });
-      revalidateTag(`LIKE_INFO-${id}`);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleDislikePost = async () => {
-    'use server';
-
-    try {
-      await disLikePostAction({ postId: id });
-      revalidateTag(`LIKE_INFO-${id}`);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const likeInfo = await getCachedLikeInfo(id);
 
   return (
@@ -145,27 +121,9 @@ async function PostDetailPage({ params }: PostDetailPageProps) {
           <EyeIcon className="size-5" />
           <span>조회 {data.views}</span>
         </div>
-        <form action={likeInfo.isLiked ? handleDislikePost : handleLikePost}>
-          <button
-            className={`flex items-center gap-2 text-neutral-400 text-sm border border-neutral-400 rounded-full p-2  transition-colors ${
-              likeInfo.isLiked
-                ? 'bg-orange-500 text-white border-orange-500'
-                : 'hover:bg-neutral-800'
-            }`}
-            type={'submit'}
-          >
-            {likeInfo.isLiked ? (
-              <HandThumbUpIcon className="size-5" />
-            ) : (
-              <OutlineHandThumbUpIcon className="size-5" />
-            )}
-            {likeInfo.isLiked ? (
-              <span>{likeInfo.likeCount}</span>
-            ) : (
-              <span>{`공감하기 (${likeInfo.likeCount})`}</span>
-            )}
-          </button>
-        </form>
+        {/* <form action={likeInfo.isLiked ? handleDislikePost : handleLikePost}> */}
+        <PostLikeToggleButton {...likeInfo} postId={id} />
+        {/* </form> */}
       </div>
     </div>
   );

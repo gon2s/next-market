@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidateTag } from 'next/cache';
 import db from '@/lib/db';
 import getSession from '@/lib/getSession';
 
@@ -11,7 +12,7 @@ export const likePostAction = async (params: { postId: number }) => {
       userId: session.id!,
     },
   });
-  return null;
+  revalidateTag(`LIKE_INFO-${params.postId}`);
 };
 
 export const disLikePostAction = async (params: { postId: number }) => {
@@ -24,4 +25,5 @@ export const disLikePostAction = async (params: { postId: number }) => {
       },
     },
   });
+  revalidateTag(`LIKE_INFO-${params.postId}`);
 };
