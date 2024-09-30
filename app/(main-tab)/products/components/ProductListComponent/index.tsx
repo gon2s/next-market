@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { fetchNextPage } from '../../server-action';
+import { fetchNextPage } from './server-action';
 import { IProduct } from '@/@types';
 import { MainProductItem } from '@/components/@Products';
 

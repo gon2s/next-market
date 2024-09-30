@@ -1,10 +1,9 @@
 import { PlusIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import React from 'react';
-import { ProductListComponent } from './components';
+import ProductListComponent from './components/ProductListComponent';
+import { productPageSize } from '@/constants';
 import db from '@/lib/db';
-
-export const productPageSize = 8;
 
 export const generateMetadata = () => {
   return {
