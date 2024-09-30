@@ -16,3 +16,8 @@ export const productSchema = z.object({
   price: z.coerce.number({ required_error: '가격은 필수에요' }),
   description: z.string(),
 });
+
+export const postSchema = z.object({
+  title: z.string({ required_error: '제목을 입력해주세요' }),
+  content: z.string({ required_error: '내용을 입력해주세요' }),
+});

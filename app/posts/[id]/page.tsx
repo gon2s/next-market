@@ -7,10 +7,19 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import React from 'react';
 import { PostCommentItem } from './components';
+import { deletePostAction } from './server-action';
 import { IComment } from '@/@types';
 import { PostComment, PostLikeToggleButton } from '@/components';
 import db from '@/lib/db';
 import getSession from '@/lib/getSession';
+
+const getIsOwner = async (userId: number) => {
+  const session = await getSession();
+  if (session.id) {
+    return session.id === userId;
+  }
+  return null;
+};
 
 const getPostDetail = async (id: number) => {
   try {
@@ -26,6 +35,7 @@ const getPostDetail = async (id: number) => {
       include: {
         user: {
           select: {
+            id: true,
             username: true,
             profile_img: true,
           },
@@ -45,7 +55,12 @@ const getPostDetail = async (id: number) => {
   }
 };
 
-const getCachedPostDetail = nextCache(getPostDetail, ['POST_DETAIL']);
+const getCachedPostDetail = async (postId: number) => {
+  const cache = nextCache(getPostDetail, [`POST_DETAIL_${postId}`], {
+    tags: [`POST_DETAIL_${postId}`],
+  });
+  return cache(postId);
+};
 
 const getCommentList = async (params: { postId: number }) => {
   const res = await db.comment.findMany({
@@ -66,13 +81,6 @@ const getCommentList = async (params: { postId: number }) => {
     },
   });
   return res;
-};
-
-const getCachedCommentList = async (postId: number) => {
-  const cache = nextCache(getCommentList, [`POST_${postId}_COMMENT`], {
-    tags: [`POST_${postId}_COMMENT`],
-  });
-  return cache({ postId });
 };
 
 const getLikeInfo = async (params: { postId: number; userId: number }) => {
@@ -113,23 +121,24 @@ interface PostDetailPageProps {
 
 async function PostDetailPage({ params }: PostDetailPageProps) {
   const id = Number(params.id);
-  if (isNaN(id)) {
-    return notFound();
-  }
+  if (isNaN(id)) return notFound();
 
   const data = await getCachedPostDetail(id);
-
   if (!data) return notFound();
 
-  const commentList = (await getCachedCommentList(id)) as unknown as IComment[];
+  const isOwner = await getIsOwner(data.user.id);
+
+  const commentList = (await getCommentList({
+    postId: id,
+  })) as unknown as IComment[];
 
   const likeInfo = await getCachedLikeInfo(id);
 
-  // const handleDeleteComment = async (commentId: number) => {
-  //   'use server';
+  const handleDeletePost = async () => {
+    'use server';
 
-  //   await deleteCommentAction({ commentId, postId: id });
-  // };
+    await deletePostAction({ postId: id });
+  };
 
   return (
     <div className="p-5 text-white">
@@ -164,41 +173,39 @@ async function PostDetailPage({ params }: PostDetailPageProps) {
 
       <div className={'mt-4 flex flex-col gap-4'}>
         <PostComment postId={id} />
-        <div className={'border-t-[0.5px] py-2 flex flex-col gap-4'}>
-          {commentList.map(li => (
-            <PostCommentItem data={li} postId={id} key={li.id} />
-            // <div key={li.id}>
-            //   <div className="flex items-center gap-2 mb-2 ">
-            //     {li.user.profile_img ? (
-            //       <Image
-            //         width={20}
-            //         height={20}
-            //         className="size-7 rounded-full"
-            //         src={li.user.profile_img}
-            //         alt={li.user.username}
-            //       />
-            //     ) : (
-            //       <UserIcon className="size-7 rounded-full" />
-            //     )}
-            //     <div className={'flex-1 '}>
-            //       <span className="text-sm font-semibold">
-            //         {li.user.username}
-            //       </span>
-            //       <div className="text-xs">
-            //         <span>
-            //           {dayjs(li.created_at).format('YYYY.MM.DD HH:mm')}
-            //         </span>
-            //       </div>
-            //     </div>
-            //     <form action={async () => handleDeleteComment(li.id)}>
-            //       <button type={'submit'}>
-            //         <XMarkIcon className="size-4 rounded-full" />
-            //       </button>
-            //     </form>
-            //   </div>
-            //   <h2 className="text-sm font-semibold">{li.payload}</h2>
-            // </div>
-          ))}
+        {commentList.length > 0 && (
+          <div className={'border-t-[0.5px] py-2 flex flex-col gap-4'}>
+            {commentList.map(li => (
+              <PostCommentItem data={li} postId={id} key={li.id} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="fixed left-0 bottom-0 w-full h-[80px] py-2 sm:px-5 px-2.4 bg-neutral-800 flex flex-row items-center gap-4 border-t-[0.5px] border-t-neutral-500">
+        <div className="flex flex-1 flex-col gap-1 justify-center">
+          <div className={'flex flex-row justify-between'}>
+            {isOwner ? (
+              <div
+                className={
+                  'flex flex-row items-center sm:gap-2 gap-1 *:sm:text-base text-sm'
+                }
+              >
+                <form action={handleDeletePost}>
+                  <button
+                    className={
+                      'bg-red-500 px-5 py-2 rounded-md text-white font-semibold'
+                    }
+                    type={'submit'}
+                  >
+                    삭제
+                  </button>
+                </form>
+              </div>
+            ) : (
+              <div />
+            )}
+          </div>
         </div>
       </div>
     </div>
