@@ -1,7 +1,7 @@
 'use server';
 
-import { productPageSize } from './page';
 import { IProduct } from '@/@types';
+import { productPageSize } from '@/constants';
 import db from '@/lib/db';
 
 export const fetchNextPage = async (page: number) => {
