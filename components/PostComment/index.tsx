@@ -1,35 +1,23 @@
+'use client';
+
 /* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-'use client';
-
-import { UserIcon } from '@heroicons/react/24/solid';
-import dayjs from 'dayjs';
 import { isEqual } from 'lodash';
-import Image from 'next/image';
-import React, { memo, useCallback, useRef } from 'react';
+import React, { memo, useRef } from 'react';
 import { createCommentAction } from './server-action';
-import { IComment } from '@/@types';
 
 interface PostCommentProps {
   postId: number;
-  commentList: IComment[];
 }
 
-function PostComment({ postId, commentList }: PostCommentProps) {
-  // eslint-disable-next-line no-console
-  console.log('코멘트 랜더링!');
+function PostComment({ postId }: PostCommentProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleSubmit = useCallback(async (formData: FormData) => {
-    try {
-      await createCommentAction(0, formData);
-      if (inputRef.current) inputRef.current.value = '';
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log(error);
-    }
-  }, []);
+  const handleSubmit = async (formData: FormData) => {
+    await createCommentAction(0, formData);
+    if (inputRef.current) inputRef.current.value = '';
+  };
 
   return (
     <div className={'flex flex-col gap-4'}>
@@ -54,41 +42,10 @@ function PostComment({ postId, commentList }: PostCommentProps) {
           </button>
         </div>
       </form>
-      <div className={'border-t-[0.5px] py-2 flex flex-col gap-4'}>
-        {commentList.map(li => (
-          <div key={li.id}>
-            <div className="flex items-center gap-2 mb-2">
-              {li.user.profile_img ? (
-                <Image
-                  width={20}
-                  height={20}
-                  className="size-7 rounded-full"
-                  src={li.user.profile_img}
-                  alt={li.user.username}
-                />
-              ) : (
-                <UserIcon className="size-7 rounded-full" />
-              )}
-              <div>
-                <span className="text-sm font-semibold">
-                  {li.user.username}
-                </span>
-                <div className="text-xs">
-                  <span>{dayjs(li.created_at).format('YYYY.MM.DD HH:mm')}</span>
-                </div>
-              </div>
-            </div>
-            <h2 className="text-sm font-semibold">{li.payload}</h2>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
 
-export default memo(
-  PostComment,
-  (prev, next) =>
-    isEqual(prev.postId, next.postId) &&
-    isEqual(prev.commentList, next.commentList),
+export default memo(PostComment, (prev, next) =>
+  isEqual(prev.postId, next.postId),
 );

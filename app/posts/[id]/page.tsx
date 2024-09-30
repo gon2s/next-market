@@ -6,6 +6,7 @@ import { unstable_cache as nextCache } from 'next/cache';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import React from 'react';
+import { PostCommentItem } from './components';
 import { IComment } from '@/@types';
 import { PostComment, PostLikeToggleButton } from '@/components';
 import db from '@/lib/db';
@@ -57,6 +58,7 @@ const getCommentList = async (params: { postId: number }) => {
       payload: true,
       user: {
         select: {
+          id: true,
           profile_img: true,
           username: true,
         },
@@ -123,6 +125,12 @@ async function PostDetailPage({ params }: PostDetailPageProps) {
 
   const likeInfo = await getCachedLikeInfo(id);
 
+  // const handleDeleteComment = async (commentId: number) => {
+  //   'use server';
+
+  //   await deleteCommentAction({ commentId, postId: id });
+  // };
+
   return (
     <div className="p-5 text-white">
       <div className="flex items-center gap-2 mb-2">
@@ -154,8 +162,44 @@ async function PostDetailPage({ params }: PostDetailPageProps) {
         <PostLikeToggleButton {...likeInfo} postId={id} />
       </div>
 
-      <div className={'mt-4'}>
-        <PostComment commentList={commentList} postId={id} />
+      <div className={'mt-4 flex flex-col gap-4'}>
+        <PostComment postId={id} />
+        <div className={'border-t-[0.5px] py-2 flex flex-col gap-4'}>
+          {commentList.map(li => (
+            <PostCommentItem data={li} postId={id} key={li.id} />
+            // <div key={li.id}>
+            //   <div className="flex items-center gap-2 mb-2 ">
+            //     {li.user.profile_img ? (
+            //       <Image
+            //         width={20}
+            //         height={20}
+            //         className="size-7 rounded-full"
+            //         src={li.user.profile_img}
+            //         alt={li.user.username}
+            //       />
+            //     ) : (
+            //       <UserIcon className="size-7 rounded-full" />
+            //     )}
+            //     <div className={'flex-1 '}>
+            //       <span className="text-sm font-semibold">
+            //         {li.user.username}
+            //       </span>
+            //       <div className="text-xs">
+            //         <span>
+            //           {dayjs(li.created_at).format('YYYY.MM.DD HH:mm')}
+            //         </span>
+            //       </div>
+            //     </div>
+            //     <form action={async () => handleDeleteComment(li.id)}>
+            //       <button type={'submit'}>
+            //         <XMarkIcon className="size-4 rounded-full" />
+            //       </button>
+            //     </form>
+            //   </div>
+            //   <h2 className="text-sm font-semibold">{li.payload}</h2>
+            // </div>
+          ))}
+        </div>
       </div>
     </div>
   );
